@@ -39,8 +39,9 @@ namespace {
 // diagnostic and return false.
 
 // from lib/Sema/SemaDeclCXX.cpp
-static bool CheckConstexprParameterTypes(Sema &SemaRef,
-                                         const FunctionDecl *FD) {
+static constexpr
+bool CheckConstexprParameterTypes(Sema &SemaRef,
+                                  const FunctionDecl *FD) {
   unsigned ArgIndex = 0;
   const FunctionProtoType *FT = FD->getType()->getAs<FunctionProtoType>();
   for (FunctionProtoType::param_type_iterator i = FT->param_type_begin(),
@@ -71,8 +72,8 @@ class ConstexprFunctionASTVisitor
   clang::DiagnosticsEngine &DE;
 
 public:
-  explicit ConstexprFunctionASTVisitor(clang::SourceManager &sm,
-                                       clang::CompilerInstance &ci)
+  constexpr explicit ConstexprFunctionASTVisitor(clang::SourceManager &sm,
+                                                 clang::CompilerInstance &ci)
       : sourceManager_(sm), CI_(ci), DE(ci.getASTContext().getDiagnostics()) {}
 
   bool VisitFunctionDecl(clang::FunctionDecl *func) {
@@ -147,8 +148,8 @@ class ConstexprVarDeclFunctionASTVisitor
     clang::DiagnosticsEngine &DE;
 
   public:
-    explicit ConstexprVarDeclVisitor(clang::CompilerInstance &ci)
-        : CI_(ci), DE(ci.getASTContext().getDiagnostics()) {}
+    constexpr explicit ConstexprVarDeclVisitor(clang::CompilerInstance &ci)
+        : DE(ci.getASTContext().getDiagnostics()) {}
 
     bool VisitDeclStmt(clang::DeclStmt *stmt) {
       if (!stmt->isSingleDecl())
@@ -207,11 +208,11 @@ class ConstexprVarDeclFunctionASTVisitor
   };
 
 public:
-  explicit ConstexprVarDeclFunctionASTVisitor(clang::SourceManager &sm,
-                                              clang::CompilerInstance &ci)
+  constexpr explicit ConstexprVarDeclFunctionASTVisitor(clang::SourceManager &sm,
+                                                        clang::CompilerInstance &ci)
       : sourceManager_(sm), CI_(ci), DE(ci.getASTContext().getDiagnostics()) {}
 
-  bool VisitFunctionDecl(clang::FunctionDecl *func) {
+  constexpr bool VisitFunctionDecl(clang::FunctionDecl *func) {
     // Only functions in our TU
     SourceLocation loc = func->getSourceRange().getBegin();
     if (!sourceManager_.isWrittenInMainFile(loc))
